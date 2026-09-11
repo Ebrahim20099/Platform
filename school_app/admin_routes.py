@@ -90,7 +90,7 @@ def challenge_score_update():
         flash("القيمة غير صحيحة", "error")
         return redirect(url_for("admin.challenge_admin"))
 
-       user = db.session.execute(
+    user = db.session.execute(
         text("SELECT id, score FROM users WHERE id = :user_id"),
         {"user_id": user_id},
     ).mappings().fetchone()
