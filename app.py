@@ -565,10 +565,11 @@ def login():
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
+
         user = db.session.execute(
             text("SELECT * FROM users WHERE email = :email"),
             {"email": email},
-        ).fetchone()
+        ).mappings().fetchone()
 
         if user is None or not check_password_hash(user["password"], password):
             return render_template("login.html", error="البريد الإلكتروني أو كلمة المرور غير صحيحة"), 401
@@ -619,7 +620,7 @@ def forgot_password():
         user = db.session.execute(
             text("SELECT * FROM users WHERE email = :email"),
             {"email": email},
-        ).fetchone()
+        ).mappings().fetchone()
 
         if user is not None:
             token = secrets.token_urlsafe(24)
@@ -648,7 +649,7 @@ def reset_password(token):
     user = db.session.execute(
         text("SELECT * FROM users WHERE reset_token = :token"),
         {"token": token},
-    ).fetchone()
+    ).mappings().fetchone()
 
     if user is None:
         return render_template("reset_password.html", valid=False, message="رابط إعادة التعيين غير صالح أو منتهي.")
