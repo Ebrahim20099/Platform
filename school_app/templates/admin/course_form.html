@@ -1,0 +1,78 @@
+{% extends "admin_base.html" %}
+{% block title %}{{ 'تعديل كورس' if course else 'كورس جديد' }}{% endblock %}
+
+{% block content %}
+<div class="admin-shell">
+  <div class="admin-topbar">
+    <h2 style="margin:0">{{ 'تعديل كورس' if course else 'إضافة كورس جديد' }}</h2>
+    <a href="{{ url_for('admin.dashboard') }}">← رجوع للوحة التحكم</a>
+  </div>
+
+  <div class="admin-card">
+    <form method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>عنوان الكورس</label>
+        <input type="text" name="title" required value="{{ course.title if course else '' }}">
+      </div>
+
+      <div class="form-group">
+        <label>الصف الدراسي</label>
+        <select name="grade" required>
+          <option value="first" {% if course and course.grade == 'first' %}selected{% endif %}>الصف الأول الثانوي</option>
+          <option value="second" {% if course and course.grade == 'second' %}selected{% endif %}>الصف الثاني الثانوي</option>
+          <option value="third" {% if course and course.grade == 'third' %}selected{% endif %}>الصف الثالث الثانوي</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>اسم الصف اللي هيظهر في الكارت</label>
+        <input type="text" name="grade_label" required
+               value="{{ course.grade_label if course else '' }}"
+               placeholder="مثال: الصف الأول الثانوي">
+      </div>
+
+      <div class="form-group">
+        <label>التاريخ (نص حر زي ٢٠٢٦/٠٧/٣١)</label>
+        <input type="text" name="date" value="{{ course.date if course else '' }}">
+      </div>
+
+      <div class="form-group">
+        <label>السعر الحالي</label>
+        <input type="number" step="0.01" name="new_price" required value="{{ course.new_price if course else '' }}">
+      </div>
+
+      <div class="form-group">
+        <label>السعر قبل الخصم (اختياري)</label>
+        <input type="number" step="0.01" name="old_price" value="{{ course.old_price if course and course.old_price else '' }}">
+      </div>
+
+      <div class="form-group">
+        <label>صورة الكارت (اختياري، لو مفيش هيتستخدم التدرج اللوني)</label>
+        <input type="file" name="image" accept="image/*">
+        {% if course and course.image %}
+          <small style="color:#8a93a8">في صورة حالية: {{ course.image }}</small>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label>تدرج لوني بديل (CSS gradient)</label>
+        <input type="text" name="gradient" value="{{ course.gradient if course else 'linear-gradient(135deg,#1f3a5f,#173a52)' }}">
+      </div>
+
+      <div class="form-group">
+        <label>وصف مختصر (اختياري)</label>
+        <textarea name="description" rows="3">{{ course.description if course else '' }}</textarea>
+      </div>
+
+      {% if course %}
+      <div class="form-group" style="flex-direction:row; align-items:center; gap:8px">
+        <input type="checkbox" name="is_active" id="is_active" style="width:auto" {% if course.is_active %}checked{% endif %}>
+        <label for="is_active" style="margin:0">الكورس ظاهر للطلاب</label>
+      </div>
+      {% endif %}
+
+      <button type="submit" class="btn btn-primary">{{ 'حفظ التعديلات' if course else 'إضافة الكورس' }}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

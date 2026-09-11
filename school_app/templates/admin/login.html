@@ -1,0 +1,21 @@
+{% extends "admin_base.html" %}
+{% block title %}تسجيل دخول الأدمن{% endblock %}
+
+{% block content %}
+<div class="admin-shell">
+  <div class="admin-card login-box">
+    <h2>تسجيل دخول المدرس</h2>
+    <form method="POST">
+      <div class="form-group">
+        <label>اليوزر</label>
+        <input type="text" name="username" required autofocus>
+      </div>
+      <div class="form-group">
+        <label>الباسورد</label>
+        <input type="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%">دخول</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>تسجيل الدخول</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+	
+    <!-- ================= NAVBAR ================= -->
+    <header class="navbar">
+        <div class="nav-container">
+
+             <!-- زرار الثلاث شرط -->
+            <button class="menu-btn">☰</button>
+
+            <!-- Logo -->
+            <a href="/" class="logo">
+                <img class="logo-img" src="../static/images/logo.png" alt="EM Logo">
+            </a>
+
+            <!-- Mobile Menu Toggle -->
+            <div class="nav-sign">
+                <img class="menu-icon" src="../static/icons/bars-solid-full.svg" alt="Menu Icon">
+            </div>
+
+            <!-- Navigation -->
+            <nav class="nav-links">
+                <a href="#">الكورسات</a>
+                <a href="{{ url_for('tools') }}">الأدوات</a>
+                <a href="{{ url_for('challenges') if user else url_for('login') }}">التحديات</a>
+                <a href="{{ url_for('reports') if user else url_for('login') }}">التقارير</a>
+                <a href="{{ url_for('forum') if user else url_for('login') }}">المنتدى</a>
+            </nav>
+
+            <!-- User Area -->
+            <div class="nav-user">
+                <div class="user-profile">
+                {% if user %}
+                  <a href="{{ url_for('dashboard') }}" class="user-name">أهلاً، {{ user.name }}</a>
+                  <a href="{{ url_for('logout') }}" class="logout-link">تسجيل الخروج</a>
+                {% else %}
+                  <a href="{{ url_for('login') }}" class="user-name">تسجيل الدخول</a>
+                {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+    </header>
+
+    <!-- الـ Sidebar بتاعة الموبايل -->
+<aside class="sidebar">
+
+    <button class="close-btn">×</button>
+
+    <div class="mobile-links">
+        <a href="#">الكورسات</a>
+        <a href="{{ url_for('tools') }}">الأدوات</a>
+        <a href="{{ url_for('challenges') if user else url_for('login') }}">التحديات</a>
+        <a href="{{ url_for('reports') if user else url_for('login') }}">التقارير</a>
+        <a href="{{ url_for('forum') if user else url_for('login') }}">المنتدى</a>
+    </div>
+
+</aside>
+
+<!-- الخلفية اللي ورا الـ Sidebar -->
+<div class="overlay"></div>
+	<main class="register-container">
+		<section class="register-form">
+			<h2>تسجيل الدخول</h2>
+			{% if error %}
+				<p class="form-error">{{ error }}</p>
+			{% endif %}
+			<form method="POST">
+				<div class="input-group">
+					<label for="email">البريد الإلكتروني</label>
+					<input type="email" id="email" name="email" required>
+				</div>
+				<div class="input-group">
+					<label for="password">كلمة المرور</label>
+					<input type="password" id="password" name="password" required>
+				</div>
+				<button class="buttonn" type="submit">دخول</button>
+				<p class="login-link" style="margin-top: 12px;">
+					<a href="{{ url_for('forgot_password') }}">نسيت كلمة المرور؟</a>
+				</p>
+				<p class="login-link">ليس لديك حساب؟ <a href="{{ url_for('register') }}">إنشاء حساب</a></p>
+			</form>
+		</section>
+	</main>
+	<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

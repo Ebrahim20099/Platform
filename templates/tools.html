@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأدوات | منصة المهندس إبراهيم محمد</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-container">
+            <button class="menu-btn" type="button">☰</button>
+            <a href="{{ url_for('home') }}" class="logo">
+                <img class="logo-img" src="{{ url_for('static', filename='images/logo.png') }}" alt="EM Logo">
+            </a>
+            <div class="nav-sign">
+                <img class="menu-icon" src="{{ url_for('static', filename='icons/bars-solid-full.svg') }}" alt="Menu Icon">
+            </div>
+            <nav class="nav-links">
+                <a href="{{ url_for('courses') }}">الكورسات</a>
+                <a href="{{ url_for('tools') }}">الأدوات</a>
+                <a href="{{ url_for('challenges') if user else url_for('login') }}">التحديات</a>
+                <a href="{{ url_for('reports') if user else url_for('login') }}">التقارير</a>
+                <a href="{{ url_for('forum') if user else url_for('login') }}">المنتدى</a>
+            </nav>
+            <div class="nav-user">
+                <div class="user-profile">
+                {% if user %}
+                    <a href="{{ url_for('dashboard') }}" class="user-name">أهلاً، {{ user.name }}</a>
+                    <a href="{{ url_for('logout') }}" class="logout-link">تسجيل الخروج</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="user-name">تسجيل الدخول</a>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <button class="close-btn" type="button">×</button>
+        <div class="mobile-links">
+            <a href="{{ url_for('courses') }}">الكورسات</a>
+            <a href="{{ url_for('tools') }}">الأدوات</a>
+            <a href="{{ url_for('challenges') if user else url_for('login') }}">التحديات</a>
+            <a href="{{ url_for('reports') if user else url_for('login') }}">التقارير</a>
+            <a href="{{ url_for('forum') if user else url_for('login') }}">المنتدى</a>
+        </div>
+    </aside>
+    <div class="overlay"></div>
+
+    <main class="tools-page">
+        <section class="Section-two">
+            <div class="wrap">
+                <div class="badge"><span class="dot"></span> معمل البرمجة</div>
+                <h1 class="code-title">محرر الأكواد</h1>
+                <p class="sub">اكتب الكود وشغّله مباشرة، وشوف النتيجة والأخطاء في نفس الصفحة.</p>
+
+                <div class="panel">
+                    <div class="toolbar">
+                        <button class="btn" id="copyBtn" type="button">📋 نسخ الكود</button>
+                        <button class="btn" id="clearResultBtn" type="button">🗑 امسح النتيجة</button>
+                        <button class="btn" id="resetBtn" type="button">↻ إعادة المثال</button>
+                        <button class="btn run" id="runBtn" type="button">▶ شغّل الكود</button>
+                        <span class="hint">⌘ / Ctrl + Enter</span>
+                        <div class="spacer"></div>
+                        <select class="lang-select" id="langSelect" aria-label="لغة البرمجة">
+                            <option value="js">JavaScript</option>
+                            <option value="python">Python</option>
+                        </select>
+                        <div class="lang-tag" id="langTag">JS</div>
+                        <div class="file-tag"><span class="dot"></span> <span id="fileName">playground.js</span></div>
+                    </div>
+
+                    <div class="body-grid">
+                        <div class="console-pane">
+                            <div class="console-head">
+                                <div class="title"><span class="dot"></span> Console — النتيجة</div>
+                                <div class="status" id="statusText">جاهز</div>
+                            </div>
+                            <div class="console-summary">
+                                <span id="countText">٠ نتائج</span>
+                                <span id="errorText">٠ خطأ</span>
+                                <button class="clear-btn" id="clearBtn2" type="button">امسح</button>
+                            </div>
+                            <div class="console-body" id="consoleBody">
+                                <div class="console-empty" id="emptyMsg">اكتب الكود واضغط «شغّل الكود» — النتيجة هتظهر هنا.</div>
+                            </div>
+                        </div>
+
+                        <div class="editor-pane">
+                            <div class="editor-head">
+                                <div class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+                                <span class="name">editor</span>
+                            </div>
+                            <div class="code-area">
+                                <div class="line-numbers" id="lineNumbers">1</div>
+                                <div class="code-editor-wrap">
+                                    <pre id="codeHighlight" aria-hidden="true"></pre>
+                                    <textarea id="code" spellcheck="false" aria-label="محرر الأكواد"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+   
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

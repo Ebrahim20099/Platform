@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> المهندس إبراهيم محمد | برمجة وذكاء اصطناعي </title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body data-logged-in="{{ 'true' if user else 'false' }}">
+
+    <!-- ================= NAVBAR ================= -->
+    <header class="navbar">
+        <div class="nav-container">
+
+             <!-- زرار الثلاث شرط -->
+            <button class="menu-btn">☰</button>
+
+            <!-- Logo -->
+            <a href="/" class="logo">
+                <img class="logo-img" src="../static/images/logo.png" alt="EM Logo">
+            </a>
+
+            <!-- Mobile Menu Toggle -->
+            <div class="nav-sign">
+                <img class="menu-icon" src="../static/icons/bars-solid-full.svg" alt="Menu Icon">
+            </div>
+
+            <!-- Navigation -->
+            <nav class="nav-links">
+                <a href="{{ url_for('courses') }}">الكورسات</a>
+                <a href="{{ url_for('tools') }}">الأدوات</a>
+                <a href="{{ url_for('challenges') if user else url_for('login') }}">التحديات</a>
+                <a href="{{ url_for('reports') if user else url_for('login') }}">التقارير</a>
+                <a href="{{ url_for('forum') if user else url_for('login') }}">المنتدى</a>
+            </nav>
+
+            <!-- User Area -->
+            <div class="nav-user">
+                <div class="user-profile">
+                {% if user %}
+                  <a href="{{ url_for('dashboard') }}" class="user-name">أهلاً، {{ user.name }}</a>
+                  <a href="{{ url_for('logout') }}" class="logout-link">تسجيل الخروج</a>
+                {% else %}
+                  <a href="{{ url_for('login') }}" class="user-name">تسجيل الدخول</a>
+                {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+    </header>
+
+    <!-- الـ Sidebar بتاعة الموبايل -->
+<aside class="sidebar">
+
+    <button class="close-btn">×</button>
+
+    <div class="mobile-links">
+        <a href="{{ url_for('courses') }}">الكورسات</a>
+        <a href="{{ url_for('tools') }}">الأدوات</a>
+        <a href="{{ url_for('challenges') if user else url_for('login') }}">التحديات</a>
+        <a href="{{ url_for('reports') if user else url_for('login') }}">التقارير</a>
+        <a href="{{ url_for('forum') if user else url_for('login') }}">المنتدى</a>
+    </div>
+
+</aside>
+
+<!-- الخلفية اللي ورا الـ Sidebar -->
+<div class="overlay"></div>
+
+
+    <!-- ================= HERO ================= -->
+    <main>
+        <section class="hero">
+        <div class="floating-icon icon1">💻</div>
+        <div class="floating-icon icon2">🤖</div>
+        <div class="floating-icon icon3">⚙️</div>
+        <div class="floating-icon icon4">🧠</div>
+
+            <!-- Background Glow -->
+            <div class="glow glow-one"></div>
+            <div class="glow glow-two"></div>
+
+            <!-- ================= CODE SIDE ================= -->
+            <div class="hero-code">
+
+                <div class="profile-background">
+                    <img class="eng" src="../static/images/profile.png">
+                </div>
+
+                <!-- Floating Code Cards -->
+                <div class="floating-code js-code">
+                    <span>console.log("الحريـف")</span>
+                    <small>JavaScript</small>
+                </div>
+
+                <div class="floating-code cpp-code">
+                    <span>cout &lt;&lt; "Hello";</span>
+                    <small>C++</small>
+                </div>
+
+                <div class="floating-code java-code">
+                    <span>System.out.println("Learn");</span>
+                    <small>Java</small>
+                </div>
+
+            </div>
+
+            <!-- ================= HERO TEXT ================= -->
+            <div class="hero-content">
+
+                <div class="hero-badge">
+                    منصة المهندس إبراهيم محمد
+                </div>
+
+                <h1>
+                    تعلم البرمجة
+                    <br>
+                    من الصفر للاحتراف
+                </h1>
+
+                <p class="hero-description">
+                    كورسات احترافية، تحديات يومية، وذكاء اصطناعي
+                    يحلل مستواك ويطور مهاراتك.
+                    انضم لآلاف الطلبة في رحلتهم.
+                </p>
+
+                <!-- Buttons -->
+                <div class="hero-buttons">
+                    <a href="{{ url_for('register') }}" class="btnn btn-primary">
+                        ابدأ مجاناً الآن
+                        <span></span>
+                    </a>
+                    <a href="{{ url_for('courses') }}" class="btnn btn-outline">
+                        استعرض الكورسات
+                        <span>▷</span>
+                    </a>
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="Section-two">
+
+
+
+
+<div class="wrap">
+ 
+  <div class="badge"><span class="dot"></span> معمل البرمجة</div>
+ 
+  <h1 class="code-title">شغل ايدك وشوف النتيجة</h1>
+  <p class="sub">جرّب وعدّل وشغّل بنفسك — النتيجة والأخطاء هتظهر قدامك فورًا. عشان تتعلّم بالممارسة مش بالحفظ.</p>
+ 
+  <div class="panel">
+ 
+    <div class="toolbar">
+      <button class="btn" id="copyBtn">📋 نسخ الكود</button>
+      <button class="btn" id="clearResultBtn">🗑 امسح النتيجة</button>
+      <button class="btn" id="resetBtn">↻ إعادة المثال</button>
+      <button class="btn run" id="runBtn">▶ شغّل الكود</button>
+      <span class="hint">⌘ / Ctrl + Enter</span>
+      <div class="spacer"></div>
+ 
+      <select class="lang-select" id="langSelect">
+        <option value="js">JavaScript</option>
+        <option value="python">Python</option>
+      </select>
+ 
+      <div class="lang-tag" id="langTag">JS</div>
+      <div class="file-tag"><span class="dot"></span> <span id="fileName">playground.js</span></div>
+    </div>
+ 
+    <div class="body-grid">
+ 
+      <div class="console-pane">
+        <div class="console-head">
+          <div class="title"><span class="dot"></span> Console — النتيجة</div>
+          <div class="status" id="statusText">جاهز</div>
+        </div>
+        <div class="console-summary">
+          <span id="countText">٠ نتائج</span>
+          <span id="errorText">٠ خطأ</span>
+          <button class="clear-btn" id="clearBtn2">امسح</button>
+        </div>
+        <div class="console-body" id="consoleBody">
+          <div class="console-empty" id="emptyMsg">اكتب الكود واضغط «شغّل الكود» — النتيجة هتظهر هنا.</div>
+        </div>
+      </div>
+ 
+      <div class="editor-pane">
+        <div class="editor-head">
+          <div class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+          <span class="name">editor</span>
+        </div>
+        <div class="code-area">
+          <div class="line-numbers" id="lineNumbers">1</div>
+          <div class="code-editor-wrap">
+            <pre id="codeHighlight" aria-hidden="true"></pre>
+            <textarea id="code" spellcheck="false" aria-label="محرر الأكواد"></textarea>
+          </div>
+        </div>
+      </div>
+ 
+    </div>
+  </div>
+</div>
+ 
+<script src="script.js"></script>
+
+        </section>
+
+         <div class="page-head">
+    <h1>الباقات المتاحة</h1>
+    <p>اختار الصف الدراسي وشوف الباقات المناسبة ليك</p>
+  </div>
+ 
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-pill active" data-grade="all">الكل</button>
+    <button class="filter-pill" data-grade="first">الصف الأول الثانوي</button>
+    <button class="filter-pill" data-grade="second">الصف الثاني الثانوي</button>
+    <button class="filter-pill" data-grade="third">الصف الثالث الثانوي</button>
+  </div>
+ 
+  <div class="cards-grid" id="cardsGrid"></div>
+
+  <div id="codeModalOverlay" class="modal-overlay">
+    <div class="modal-box">
+      <button id="closeModal" class="modal-close" type="button">✕</button>
+      <h3>إشترك في الكورس</h3>
+      <p id="modalCourseTitle" class="modal-course-title"></p>
+      <input id="codeInput" type="text" placeholder="اكتب كود الاشتراك هنا" maxlength="20">
+      <div id="codeError" class="code-error"></div>
+      <button id="submitCodeBtn" class="subscribe-btn" type="button">تأكيد الكود</button>
+    </div>
+  </div>
+
+ 
+<script id="courseData" type="application/json">{{ courses | tojson }}</script>
+<script>
+  const packages = JSON.parse(document.getElementById('courseData').textContent);
+  const grid = document.getElementById('cardsGrid');
+  const filterBar = document.getElementById('filterBar');
+  const modal = document.getElementById('codeModalOverlay');
+  const codeInput = document.getElementById('codeInput');
+  const codeError = document.getElementById('codeError');
+  const isLoggedIn = document.body.dataset.loggedIn === 'true';
+  let activeCourseId = null;
+
+  function renderCards(grade = 'all') {
+    const courses = grade === 'all' ? packages : packages.filter(course => course.grade === grade);
+    grid.innerHTML = courses.length ? courses.map(course => `
+      <article class="card">
+        <div class="card-image" style="background:${course.image ? `url('${course.image}') center/cover` : course.gradient}"></div>
+        <div class="card-body">
+          <div class="card-tags"><h3 class="card-title">${course.title}</h3><span class="grade-tag">${course.gradeLabel}</span></div>
+          <div class="card-date">📅 ${course.date || ''}</div>
+          <div class="price-box"><span class="price-new">${course.newPrice} <span class="price-currency">ج.م</span></span></div>
+          <button class="subscribe-btn ${course.subscribed ? 'is-subscribed' : ''}" data-id="${course.id}" data-title="${course.title}" data-subscribed="${course.subscribed}" type="button">${course.subscribed ? '✓ مشترك - فتح الكورس' : '🛒 إشترك الآن'}</button>
+        </div>
+      </article>`).join('') : '<div class="no-results">مفيش باقات متاحة للصف ده حاليًا</div>';
+  }
+
+  filterBar.addEventListener('click', event => {
+    const button = event.target.closest('.filter-pill');
+    if (!button) return;
+    filterBar.querySelectorAll('.filter-pill').forEach(item => item.classList.remove('active'));
+    button.classList.add('active');
+    renderCards(button.dataset.grade);
+  });
+
+  grid.addEventListener('click', event => {
+    const button = event.target.closest('.subscribe-btn');
+    if (!button) return;
+    if (!isLoggedIn) {
+      window.location.href = "{{ url_for('login') }}";
+      return;
+    }
+    if (button.dataset.subscribed === 'true') {
+      window.location.href = `/course/${button.dataset.id}/content`;
+      return;
+    }
+    activeCourseId = Number(button.dataset.id);
+    document.getElementById('modalCourseTitle').textContent = button.dataset.title;
+    codeInput.value = '';
+    codeError.textContent = '';
+    modal.classList.add('open');
+    codeInput.focus();
+  });
+
+  function closeModal() { modal.classList.remove('open'); activeCourseId = null; }
+  document.getElementById('closeModal').addEventListener('click', closeModal);
+  modal.addEventListener('click', event => { if (event.target === modal) closeModal(); });
+  document.getElementById('submitCodeBtn').addEventListener('click', async () => {
+    if (!codeInput.value.trim()) { codeError.textContent = 'من فضلك اكتب الكود'; return; }
+    const response = await fetch('/api/verify-code', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({course_id: activeCourseId, code: codeInput.value.trim()}) });
+    const result = await response.json();
+    if (result.success) window.location.href = result.redirect_url;
+    else codeError.textContent = result.message || 'الكود غير صحيح';
+  });
+  renderCards();
+</script>
+
+
+<footer class="footer">
+
+    <!-- Social Media -->
+    
+
+
+    <!-- Contact Section -->
+    <div class="footer-contact">
+
+        <div class="footer-social">
+
+        <a href="#" class="social-icon">
+            <i class="fa-brands fa-whatsapp"></i>
+        </a>
+
+        <a href="#" class="social-icon">
+            <i class="fa-brands fa-tiktok"></i>
+        </a>
+
+        <a href="#" class="social-icon">
+            <i class="fa-brands fa-instagram"></i>
+        </a>
+
+        <a href="#" class="social-icon">
+            <i class="fa-brands fa-facebook-f"></i>
+        </a>
+
+    </div><!-- Location -->
+        <div class="contact-item">
+
+            <div class="contact-text">
+                <span>موقعنا</span>
+                <strong>القاهرة، مصر</strong>
+            </div>
+
+            <div class="contact-icon location">
+                <i class="fa-solid fa-location-dot"></i>
+            </div>
+
+        </div>
+
+
+        <!-- Email -->
+        
+
+
+        <!-- Phone -->
+        <div class="contact-item">
+
+            <div class="contact-text">
+                <span>اتصل بنا</span>
+                <strong>+20 1092677450</strong>
+            </div>
+
+            <div class="contact-icon phone">
+                <i class="fa-solid fa-phone"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+<!-- Font Awesome -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+
+    </main>
+
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>

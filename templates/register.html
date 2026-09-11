@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> انشاء حساب </title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+    <header class="navbar">
+        <div class="nav-container">
+
+             <!-- زرار الثلاث شرط -->
+            <button class="menu-btn">☰</button>
+
+            <!-- Logo -->
+            <a href="/" class="logo">
+                <img class="logo-img" src="../static/images/logo.png" alt="EM Logo">
+            </a>
+
+            <!-- Mobile Menu Toggle -->
+            <div class="nav-sign">
+                <img class="menu-icon" src="../static/icons/bars-solid-full.svg" alt="Menu Icon">
+            </div>
+
+            <!-- Navigation -->
+            <nav class="nav-links">
+                <a href="#">الكورسات</a>
+                <a href="{{ url_for('tools') }}">الأدوات</a>
+                <a href="{{ url_for('challenges') if user else url_for('login') }}">التحديات</a>
+                <a href="{{ url_for('reports') if user else url_for('login') }}">التقارير</a>
+                <a href="{{ url_for('forum') if user else url_for('login') }}">المنتدى</a>
+            </nav>
+
+            <!-- User Area -->
+            <div class="nav-user">
+                <div class="user-profile">
+                {% if user %}
+                  <a href="{{ url_for('dashboard') }}" class="user-name">أهلاً، {{ user.name }}</a>
+                  <a href="{{ url_for('logout') }}" class="logout-link">تسجيل الخروج</a>
+                {% else %}
+                  <a href="{{ url_for('login') }}" class="user-name">تسجيل الدخول</a>
+                {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+    </header>
+
+    <!-- الـ Sidebar بتاعة الموبايل -->
+<aside class="sidebar">
+
+    <button class="close-btn">×</button>
+
+    <div class="mobile-links">
+        <a href="#">الكورسات</a>
+        <a href="{{ url_for('tools') }}">الأدوات</a>
+        <a href="{{ url_for('challenges') if user else url_for('login') }}">التحديات</a>
+        <a href="{{ url_for('reports') if user else url_for('login') }}">التقارير</a>
+        <a href="{{ url_for('forum') if user else url_for('login') }}">المنتدى</a>
+    </div>
+
+</aside>
+
+<!-- الخلفية اللي ورا الـ Sidebar -->
+<div class="overlay"></div>
+
+
+
+
+    <div class="register-container">
+
+        <!-- الجزء الجانبي -->
+        <div class="register-info">
+
+            <h1>أهلاً بيك 👋</h1>
+
+            <p>
+                ابدأ رحلتك التعليمية معانا
+                وخلي هدفك دايمًا قدام عينك 💪
+            </p>
+
+        </div>
+
+
+        <!-- فورم التسجيل -->
+        <div class="register-form">
+
+            <h2>إنشاء حساب</h2>
+
+            <p class="subtitle">
+                أنشئ حسابك وابدأ رحلتك
+            </p>
+
+
+            <form action="/register" method="POST">
+
+                {% if error %}
+                    <p class="form-error">{{ error }}</p>
+                {% endif %}
+
+                <!-- الاسم -->
+                <div class="input-group">
+
+                    <label for="name">
+                        الاسم بالكامل
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="اكتب اسمك بالكامل"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- رقم الهاتف -->
+                <div class="input-group">
+
+                    <label for="phone">
+                        رقم الموبايل
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        placeholder="01xxxxxxxxx"
+                        required
+                    >
+
+                </div>
+
+                <!-- رقم ولي الأمر -->
+                <div class="input-group">
+
+                    <label for="guardian_phone">
+                        رقم ولي الأمر
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="guardian_phone"
+                        name="guardian_phone"
+                        placeholder="05xxxxxxxxx"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- الإيميل -->
+                <div class="input-group">
+
+                    <label for="email">
+                        البريد الإلكتروني
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="example@gmail.com"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- الصف الدراسي -->
+                <div class="input-group">
+
+                    <label for="grade">
+                        الصف الدراسي
+                    </label>
+
+                    <select id="grade" name="grade" required>
+
+                        <option value="">
+                            اختر الصف الدراسي
+                        </option>
+
+                        <option value="first">
+                            الصف الأول الثانوي
+                        </option>
+
+                        <option value="second">
+                            الصف الثاني الثانوي
+                        </option>
+
+                        <option value="third">
+                            الصف الثالث الثانوي
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- طريقة الدراسة -->
+                <div class="input-group">
+
+                    <label>
+                        طريقة الدراسة
+                    </label>
+
+                    <div class="study-options">
+
+                        <label class="study-option">
+
+                            <input
+                                type="radio"
+                                name="study_type"
+                                value="center"
+                                required
+                            >
+
+                            <span>
+                                سنتر
+                            </span>
+
+                        </label>
+
+
+                        <label class="study-option">
+
+                            <input
+                                type="radio"
+                                name="study_type"
+                                value="online"
+                            >
+
+                            <span>
+                                أونلاين
+                            </span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <!-- كلمة المرور -->
+                <div class="input-group">
+
+                    <label for="password">
+                        كلمة المرور
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="اكتب كلمة المرور"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- تأكيد كلمة المرور -->
+                <div class="input-group">
+
+                    <label for="confirm-password">
+                        تأكيد كلمة المرور
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirm-password"
+                        name="confirm_password"
+                        placeholder="أعد كتابة كلمة المرور"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- زر التسجيل -->
+                <button class="buttonn" type="submit">
+                    إنشاء الحساب
+                </button>
+
+
+                <!-- تسجيل الدخول -->
+                <p class="login-link">
+
+                    لديك حساب بالفعل؟
+
+                    <a href="/login">
+                        تسجيل الدخول
+                    </a>
+
+                </p>
+
+            </form>
+
+        </div>
+
+    </div>
+
+<script src="{{ url_for('static', filename='js/register.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

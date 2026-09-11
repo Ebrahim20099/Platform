@@ -1,0 +1,59 @@
+{% extends "admin_base.html" %}
+{% block title %}لوحة تحكم المدرس{% endblock %}
+
+{% block content %}
+<div class="admin-shell">
+  <div class="admin-topbar">
+    <h2 style="margin:0">لوحة التحكم — الكورسات</h2>
+    <div>
+      <a href="{{ url_for('admin.course_new') }}" class="btn btn-primary">+ كورس جديد</a>
+      <a href="{{ url_for('admin.challenge_admin') }}" class="btn btn-secondary">🏆 إدارة التحديات</a>
+      <a href="{{ url_for('admin.forum_admin') }}" class="btn btn-secondary">💬 المنتدى</a>
+      <a href="{{ url_for('home') }}" target="_blank">👁️ عرض الموقع</a>
+      <a href="{{ url_for('admin.logout') }}">🚪 خروج</a>
+    </div>
+  </div>
+
+  {% if courses %}
+    <div class="admin-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>الكورس</th>
+            <th>الصف</th>
+            <th>السعر</th>
+            <th>الأكواد المتاحة</th>
+            <th>الطلاب المشتركين</th>
+            <th>محتوى</th>
+            <th>فعال؟</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in courses %}
+          <tr>
+            <td>{{ c.title }}</td>
+            <td>{{ c.grade_label }}</td>
+            <td>{{ c.new_price }} ج.م</td>
+            <td>{{ c.unused_codes_count() }} / {{ c.codes|length }}</td>
+            <td>{{ c.enrollments|length }}</td>
+            <td>{{ c.contents|length }} عنصر</td>
+            <td>{{ "✅" if c.is_active else "⛔" }}</td>
+            <td>
+              <a href="{{ url_for('admin.course_manage', course_id=c.id) }}" class="btn btn-secondary">إدارة المحتوى والأكواد</a>
+              <a href="{{ url_for('admin.course_edit', course_id=c.id) }}" class="btn btn-secondary">تعديل</a>
+              <form method="POST" action="{{ url_for('admin.course_delete', course_id=c.id) }}" style="display:inline"
+                    onsubmit="return confirm('متأكد من حذف الكورس ده؟ هيتحذف معاه كل المحتوى والأكواد.')">
+                <button type="submit" class="btn btn-danger">حذف</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="admin-card">لسه مفيش كورسات، دوس "كورس جديد" عشان تبدأ.</div>
+  {% endif %}
+</div>
+{% endblock %}

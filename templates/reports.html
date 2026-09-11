@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>التقارير</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <main class="reports-page">
+    <div class="reports-shell">
+      <header class="reports-header">
+        <div>
+          <p class="eyebrow">لوحة الأداء</p>
+          <h1>تقارير الطلاب</h1>
+        </div>
+        <a href="{{ url_for('home') }}" class="back-link">العودة للرئيسية</a>
+      </header>
+
+      {% if report_rows %}
+        <section class="reports-summary">
+          <div class="summary-box">
+            <span>إجمالي التقارير</span>
+            <strong>{{ report_rows|length }}</strong>
+          </div>
+          <div class="summary-box highlight">
+            <span>متوسط النسبة</span>
+            <strong>{{ (report_rows | map(attribute='report.percentage') | sum / (report_rows|length or 1)) | round(1) }}%</strong>
+          </div>
+          <div class="summary-box">
+            <span>آخر تقرير</span>
+            <strong>{{ report_rows[0].course.title if report_rows[0].course else 'الكورس' }}</strong>
+          </div>
+        </section>
+
+        {% for item in report_rows %}
+          <section class="report-card">
+            <div class="report-card-head">
+              <div>
+                <p class="report-label">الكورس</p>
+                <h2>{{ item.course.title if item.course else 'الكورس' }}</h2>
+              </div>
+              {% if item.report.result_status == 'ready' %}
+                <span class="report-score">{{ item.report.score }} / {{ item.report.total }}</span>
+              {% else %}
+                <span class="report-score pending">قيد التصحيح</span>
+              {% endif %}
+            </div>
+
+            <div class="report-metrics">
+              <div class="metric">
+                <span>النسبة</span>
+                <strong>{{ item.report.percentage }}%</strong>
+              </div>
+              <div class="metric">
+                <span>الإنجازات</span>
+                <strong>{{ item.report.achievements and 'موجودة' or 'لا توجد' }}</strong>
+              </div>
+              <div class="metric">
+                <span>نقاط الضعف</span>
+                <strong>{{ item.report.weak_points and 'محددة' or 'غير محددة' }}</strong>
+              </div>
+            </div>
+
+            {% if item.report.result_status != 'ready' %}
+              <div class="report-block analysis">
+                <h3>حالة النتيجة</h3>
+                <p>النتيجة معلقة حتى يتم تصحيح جميع الأسئلة المقالية. سيتم إرسالها لك فور الانتهاء مع ملاحظات المصحح.</p>
+              </div>
+            {% endif %}
+
+            {% if item.report.achievements %}
+              <div class="report-block">
+                <h3>الإنجازات</h3>
+                <p>{{ item.report.achievements }}</p>
+              </div>
+            {% endif %}
+
+            {% if item.report.weak_points %}
+              <div class="report-block">
+                <h3>نقاط القوة / الضعف</h3>
+                <p>{{ item.report.weak_points }}</p>
+              </div>
+            {% endif %}
+
+            {% if item.report.admin_analysis %}
+              <div class="report-block analysis">
+                <h3>تحليل الأستاذ</h3>
+                <p>{{ item.report.admin_analysis }}</p>
+              </div>
+            {% endif %}
+          </section>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+          <h2>لا توجد تقارير بعد</h2>
+          <p>بعد إنهاء الامتحان وسيتم ظهور درجاتك وتحليل الأستاذ هنا.</p>
+        </div>
+      {% endif %}
+    </div>
+  </main>
+</body>
+</html>

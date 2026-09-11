@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>لوحة التحكم</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+	<header class="navbar">
+		<div class="nav-container">
+			<a href="{{ url_for('home') }}" class="logo">
+				<img class="logo-img" src="{{ url_for('static', filename='images/logo.png') }}" alt="EM Logo">
+			</a>
+			<div class="nav-user">
+				<div class="user-profile">
+					<a href="{{ url_for('dashboard') }}" class="user-name">أهلاً، {{ user.name }}</a>
+					<a href="{{ url_for('logout') }}" class="logout-link">تسجيل الخروج</a>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<main class="dashboard-container">
+		<h1>لوحة التحكم</h1>
+		<p>بيانات حسابك</p>
+
+		<section class="user-data">
+			<div class="data-item"><strong>الاسم</strong><span>{{ user.name }}</span></div>
+			<div class="data-item"><strong>البريد الإلكتروني</strong><span>{{ user.email }}</span></div>
+			<div class="data-item"><strong>رقم الموبايل</strong><span>{{ user.phone }}</span></div>
+			<div class="data-item"><strong>رقم ولي الأمر</strong><span>{{ user.guardian_phone or 'غير موجود' }}</span></div>
+			<div class="data-item"><strong>الصف الدراسي</strong><span>{{ user.grade }}</span></div>
+			<div class="data-item"><strong>طريقة الدراسة</strong><span>{{ user.study_type }}</span></div>
+		</section>
+
+		<section class="enrolled-courses">
+			<h2>الكورسات المشترك فيها</h2>
+			{% if enrollments %}
+				<div class="cards-grid">
+					{% for enrollment in enrollments %}
+						<article class="card">
+							<div class="card-body">
+								<h3 class="card-title">{{ enrollment.course.title }}</h3>
+								<p>{{ enrollment.course.grade_label }}</p>
+								<a class="subscribe-btn" href="{{ url_for('course_content', course_id=enrollment.course.id) }}">فتح الكورس</a>
+							</div>
+						</article>
+					{% endfor %}
+				</div>
+			{% else %}
+				<p>لسه مش مشترك في أي كورسات.</p>
+			{% endif %}
+		</section>
+	</main>
+</body>
+</html>

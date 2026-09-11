@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المنتدى</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="logo">
+                <img class="logo-img" src="{{ url_for('static', filename='images/logo.png') }}" alt="EM Logo">
+            </a>
+            <nav class="nav-links">
+                <a href="{{ url_for('courses') }}">الكورسات</a>
+                <a href="{{ url_for('tools') }}">الأدوات</a>
+                <a href="{{ url_for('challenges') if user else url_for('login') }}">التحديات</a>
+                <a href="{{ url_for('reports') if user else url_for('login') }}">التقارير</a>
+                <a href="{{ url_for('forum') }}">💬 المنتدى</a>
+            </nav>
+            <div class="nav-user">
+                <div class="user-profile">
+                    {% if user %}
+                        <a href="{{ url_for('dashboard') }}" class="user-name">أهلاً، {{ user.name }}</a>
+                        <a href="{{ url_for('logout') }}" class="logout-link">تسجيل الخروج</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="user-name">تسجيل الدخول</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="forum-page">
+        <section class="forum-shell">
+            <div class="forum-header">
+                <div>
+                    <span class="eyebrow">منتدى الطلبة</span>
+                    <h1>اسأل واستفد</h1>
+                </div>
+            </div>
+
+            <div class="forum-question-box">
+                <h2>اكتب سؤالك</h2>
+                <form method="POST" enctype="multipart/form-data">
+                    <textarea name="question" rows="5" placeholder="اكتب سؤالك هنا..."></textarea>
+                    <div class="forum-upload-box">
+                        <label for="forum-image">📷 أرفق صورة للسؤال</label>
+                        <input id="forum-image" type="file" name="image" accept="image/*">
+                    </div>
+                    <button type="submit" class="primary-btn">إرسال السؤال</button>
+                </form>
+            </div>
+
+            <div class="forum-filter-bar">
+                <a href="{{ url_for('forum', status='all') }}" class="filter-chip {% if status_filter == 'all' %}active{% endif %}">الكل</a>
+                <a href="{{ url_for('forum', status='open') }}" class="filter-chip {% if status_filter == 'open' %}active{% endif %}">مفتوح</a>
+                <a href="{{ url_for('forum', status='answered') }}" class="filter-chip {% if status_filter == 'answered' %}active{% endif %}">تم الرد</a>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="forum-list">
+                {% if questions %}
+                    {% for item in questions %}
+                        <article class="forum-card">
+                            <div class="forum-meta">
+                                <span>{{ item.student_name }}</span>
+                                <span>{{ item.student_grade }}</span>
+                                <span>{{ item.created_at[:10] if item.created_at else '' }}</span>
+                            </div>
+                            <h3>السؤال</h3>
+                            <p>{{ item.question }}</p>
+                            {% if item.image %}
+                                <div class="forum-image-wrap">
+                                    <img src="{{ item.image }}" alt="صورة السؤال" class="forum-image">
+                                </div>
+                            {% endif %}
+
+                            {% if item.answer %}
+                                <div class="forum-answer">
+                                    <h4>إجابة الإدارة</h4>
+                                    <p>{{ item.answer }}</p>
+                                    {% if item.answered_at %}
+                                        <small>تمت الإجابة في {{ item.answered_at[:10] if item.answered_at else '' }}</small>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="forum-pending">
+                                    <p>الإجابة قيد مراجعة الإدارة</p>
+                                </div>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">لا توجد أسئلة حتى الآن.</div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+</body>
+</html>

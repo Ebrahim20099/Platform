@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{{ course.title }}</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="course-content-page">
+	<header class="navbar course-navbar">
+		<div class="nav-container">
+			<a href="{{ url_for('home') }}" class="logo">المنصة</a>
+			<div class="nav-user"><a href="{{ url_for('dashboard') }}">حسابي</a></div>
+		</div>
+	</header>
+
+	<main class="course-page">
+		<a href="{{ url_for('courses') }}" class="back-link">← رجوع للكورسات</a>
+		<section class="course-hero-card">
+			<div class="course-hero-copy">
+				<span class="course-hero-kicker">الكورس التعليمي</span>
+				<h1>{{ course.title }}</h1>
+				<p>{{ course.grade_label }}</p>
+			</div>
+			<div class="course-hero-mark">⌄</div>
+		</section>
+
+		{% if course.contents %}
+			<section class="course-materials">
+				<div class="lesson-section-head">
+					<h2>الشرح</h2>
+					<button class="lesson-toggle-all" type="button" data-toggle-all>فتح الكل</button>
+				</div>
+				<div class="lesson-list">
+				{% for item in course.contents %}
+					<article class="content-item{% if loop.first %} is-open{% endif %}">
+						<button class="content-item-head" type="button" aria-expanded="{{ 'true' if loop.first else 'false' }}">
+							<span class="content-item-icon">{{ '▶' if item.content_type == 'video' else '▣' }}</span>
+							<span class="content-item-title">{{ item.title }}</span>
+							<span class="content-item-chevron">⌄</span>
+						</button>
+						<div class="content-item-body">
+							{% if item.content_type == 'video' %}
+								{% if item.body.startswith('/static/uploads/content/') %}
+									<div class="video-wrap"><video controls preload="metadata"><source src="{{ item.body }}" type="video/mp4">متصفحك لا يدعم تشغيل الفيديو.</video></div>
+								{% else %}
+									<div class="video-wrap"><iframe src="{{ item.body }}" title="{{ item.title }}" allowfullscreen></iframe></div>
+								{% endif %}
+							{% elif item.content_type == 'pdf' %}
+								<a class="content-link-btn" href="{{ url_for('course_content_file', item_id=item.id) }}" download="{{ item.title }}.pdf">تحميل ملف PDF</a>
+							{% elif item.content_type == 'link' %}
+								<a class="content-link-btn" href="{{ item.body }}" target="_blank" rel="noopener">فتح المادة</a>
+							{% else %}
+								<p class="content-text">{{ item.body }}</p>
+							{% endif %}
+						</div>
+					</article>
+				{% endfor %}
+				</div>
+			</section>
+		{% else %}
+			<p class="no-results">لم تتم إضافة محتوى لهذا الكورس بعد.</p>
+		{% endif %}
+
+		{% if course.exam_questions %}
+			<section class="exam-section protected-exam" data-protected-exam>
+				<h2>امتحان المحاضرة</h2>
+				{% if exam_report %}
+					{% if exam_report.result_status == 'ready' %}
+						<div class="exam-result">نتيجتك: {{ exam_report.score }} من {{ exam_report.total }}</div>
+					{% else %}
+						<div class="exam-result pending-result">نتيجتك قيد التصحيح، سيتم إرسال النتيجة فور الانتهاء من تصحيح الأسئلة المقالية.</div>
+					{% endif %}
+					{% if essay_total and exam_report.result_status != 'ready' %}<p class="exam-manual-note">تم إرسال {{ essay_total }} سؤال مقالي للمراجعة اليدوية.</p>{% endif %}
+				{% else %}
+					<form method="POST" action="{{ url_for('submit_exam', course_id=course.id) }}">
+						{% for question in course.exam_questions %}
+							<fieldset class="exam-question">
+								<legend>{{ loop.index }}. {{ question.question }}</legend>
+								{% if question.question_type == 'essay' %}
+									<textarea name="question_{{ question.id }}" rows="5" required placeholder="اكتب إجابتك هنا..."></textarea>
+								{% elif question.question_type == 'true_false' %}
+									<label><input type="radio" name="question_{{ question.id }}" value="true" required> صح</label>
+									<label><input type="radio" name="question_{{ question.id }}" value="false" required> غلط</label>
+								{% else %}
+									{% for key, answer in [('a', question.option_a), ('b', question.option_b), ('c', question.option_c), ('d', question.option_d)] %}
+										<label><input type="radio" name="question_{{ question.id }}" value="{{ key }}" required> {{ key|upper }}. {{ answer }}</label>
+									{% endfor %}
+								{% endif %}
+							</fieldset>
+						{% endfor %}
+						<button class="subscribe-btn" type="submit">تسليم الامتحان</button>
+					</form>
+				{% endif %}
+			</section>
+		{% endif %}
+	</main>
+	<script>
+		document.querySelectorAll('.content-item-head').forEach(button => {
+			button.addEventListener('click', () => {
+				const item = button.closest('.content-item');
+				const isOpen = item.classList.toggle('is-open');
+				button.setAttribute('aria-expanded', isOpen);
+			});
+		});
+
+		document.querySelector('[data-toggle-all]')?.addEventListener('click', event => {
+			const items = [...document.querySelectorAll('.content-item')];
+			const openAll = items.some(item => !item.classList.contains('is-open'));
+			items.forEach(item => {
+				item.classList.toggle('is-open', openAll);
+				item.querySelector('.content-item-head').setAttribute('aria-expanded', openAll);
+			});
+			event.currentTarget.textContent = openAll ? 'إغلاق الكل' : 'فتح الكل';
+		});
+
+		const protectedExam = document.querySelector('[data-protected-exam]');
+		function examWarning(event) {
+			if (!protectedExam || !protectedExam.contains(event.target)) return;
+			event.preventDefault();
+		}
+		protectedExam?.addEventListener('contextmenu', examWarning);
+		protectedExam?.addEventListener('copy', examWarning);
+		protectedExam?.addEventListener('cut', examWarning);
+		protectedExam?.addEventListener('dragstart', examWarning);
+		protectedExam?.addEventListener('selectstart', examWarning);
+		document.addEventListener('keydown', event => {
+			if (!protectedExam || !document.activeElement || !protectedExam.contains(document.activeElement)) return;
+			const key = event.key.toLowerCase();
+			const blockedShortcut = event.ctrlKey && ['c', 'u', 'p', 's'].includes(key);
+			const developerShortcut = event.key === 'F12' || (event.ctrlKey && event.shiftKey && ['i', 'j', 'c'].includes(key));
+			if (blockedShortcut || developerShortcut || event.key === 'PrintScreen') {
+				event.preventDefault();
+				if (event.key === 'PrintScreen' && navigator.clipboard) navigator.clipboard.writeText('').catch(() => {});
+			}
+		});
+	</script>
+</body>
+</html>

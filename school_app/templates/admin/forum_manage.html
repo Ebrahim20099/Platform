@@ -1,0 +1,69 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}إدارة المنتدى{% endblock %}
+
+{% block content %}
+<div class="admin-shell">
+    <div class="admin-topbar">
+        <div>
+            <h2>إدارة المنتدى</h2>
+        </div>
+        <div>
+            <a href="{{ url_for('admin.dashboard') }}">لوحة التحكم</a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="forum-admin-list">
+        {% if questions %}
+            {% for item in questions %}
+                <div class="forum-admin-card">
+                    <div class="forum-meta">
+                        <span class="meta-pill">الطالب: {{ item.user_id }}</span>
+                        <span class="meta-pill">{{ item.created_at[:16] if item.created_at else '' }}</span>
+                        <span class="status-badge {% if item.answer %}answered{% else %}open{% endif %}">
+                            {{ 'تم الرد' if item.answer else 'مفتوح' }}
+                        </span>
+                    </div>
+
+                    <div class="forum-admin-question">
+                        <h3>السؤال</h3>
+                        <p>{{ item.question }}</p>
+                    </div>
+
+                    {% if item.image %}
+                        <div class="forum-image-wrap">
+                            <img src="{{ item.image }}" alt="صورة السؤال" class="forum-image">
+                        </div>
+                    {% endif %}
+
+                    <form method="POST" action="{{ url_for('admin.forum_answer', question_id=item.id) }}" class="forum-admin-form">
+                        <label for="answer-{{ item.id }}">الإجابة</label>
+                        <textarea id="answer-{{ item.id }}" name="answer" rows="4" placeholder="اكتب الإجابة...">{{ item.answer or '' }}</textarea>
+                        <div class="forum-admin-actions">
+                            <button type="submit" class="btn btn-primary">إرسال الإجابة</button>
+                        </div>
+                    </form>
+
+                    <form method="POST" action="{{ url_for('admin.forum_delete', question_id=item.id) }}" onsubmit="return confirm('هل أنت متأكد من حذف هذا السؤال؟')" class="forum-delete-form">
+                        <button type="submit" class="btn btn-danger">حذف السؤال</button>
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state admin-empty-box">
+                <div class="empty-icon">💬</div>
+                <h2>لا توجد أسئلة في المنتدى</h2>
+                <p>عندما يرسل الطلاب أسئلة جديدة، ستظهر هنا.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "admin_base.html" %}
+{% block title %}إدارة التحديات{% endblock %}
+
+{% block content %}
+<div class="admin-shell">
+  <div class="admin-topbar">
+    <h2 style="margin:0">إدارة التحديات</h2>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">العودة للدashboard</a>
+  </div>
+
+  <div class="admin-card">
+    <h3>إضافة أو تعديل نقاط الطلاب</h3>
+    <form method="POST" action="{{ url_for('admin.challenge_score_update') }}">
+      <div class="admin-form-grid">
+        <select name="user_id" required>
+          <option value="">اختر الطالب</option>
+          {% for user in all_users %}
+            <option value="{{ user.id }}">{{ user.name }} — {{ 'سنتر' if user.study_type == 'center' else 'أون لاين' }}</option>
+          {% endfor %}
+        </select>
+        <input type="number" name="score" placeholder="التغيير في النقاط" value="0" required>
+        <input type="text" name="reason" placeholder="سبب التحديث (اختياري)">
+        <button type="submit" class="btn btn-primary">تحديث النقاط</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="admin-card" style="margin-top: 20px;">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>اسم الطالب</th>
+          <th>نوع الدراسة</th>
+          <th>النقاط</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in all_users %}
+          <tr>
+            <td>{{ user.name }}</td>
+            <td>{{ 'سنتر' if user.study_type == 'center' else 'أون لاين' }}</td>
+            <td>{{ user.score }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

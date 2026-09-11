@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>التحديات</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .challenge-shell {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 20px 50px;
+      color: #1d2433;
+    }
+    .challenge-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .challenge-header h1 {
+      margin: 0;
+      font-size: 2.1rem;
+      color: #10253d;
+    }
+    .challenge-score-pill {
+      background: linear-gradient(135deg, #ffcf5a, #f59e0b);
+      color: #10253d;
+      font-weight: 700;
+      padding: 10px 16px;
+      border-radius: 999px;
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.2);
+    }
+    .leaderboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 22px;
+      margin-top: 20px;
+    }
+    .leaderboard-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+      padding: 20px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+    }
+    .leaderboard-card h2 {
+      margin: 0 0 16px;
+      color: #10253d;
+      font-size: 1.5rem;
+    }
+    .rank-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .rank-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    .rank-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .rank-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #1d4ed8;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .rank-name {
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .rank-score {
+      font-weight: 800;
+      color: #f59e0b;
+    }
+    .empty-state {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 14px;
+      padding: 18px;
+      text-align: center;
+      color: #475569;
+    }
+    .admin-panel {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+      padding: 22px;
+      margin-top: 28px;
+    }
+    .admin-panel h3 {
+      margin-top: 0;
+      margin-bottom: 18px;
+    }
+    .admin-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .admin-form-grid input, .admin-form-grid select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 1rem;
+      background: #fff;
+    }
+    .admin-form-grid button {
+      padding: 12px 18px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 640px;
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: center;
+    }
+    th {
+      background: #eef4ff;
+    }
+  </style>
+</head>
+<body>
+  <main class="challenge-shell">
+    <div class="challenge-header">
+      <a href="{{ url_for('home') }}" class="back-link">← الرئيسية</a>
+      <div class="challenge-score-pill">نقاطك: {{ user_score }}</div>
+    </div>
+
+    <h1>لوحة التحديات</h1>
+
+    <div class="leaderboard-grid">
+      <section class="leaderboard-card">
+        <h2>أفضل 3 سنتر</h2>
+        {% if leaderboard.center %}
+          <ul class="rank-list">
+            {% for student in leaderboard.center %}
+              <li class="rank-item">
+                <div class="rank-meta">
+                  <span class="rank-badge">{{ loop.index }}</span>
+                  <span class="rank-name">{{ student.name }}</span>
+                </div>
+                <span class="rank-score">{{ student.score }} نقطة</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="empty-state">لسه مفيش نتائج في سنتر</div>
+        {% endif %}
+      </section>
+
+      <section class="leaderboard-card">
+        <h2>أفضل 3 أون لاين</h2>
+        {% if leaderboard.online %}
+          <ul class="rank-list">
+            {% for student in leaderboard.online %}
+              <li class="rank-item">
+                <div class="rank-meta">
+                  <span class="rank-badge">{{ loop.index }}</span>
+                  <span class="rank-name">{{ student.name }}</span>
+                </div>
+                <span class="rank-score">{{ student.score }} نقطة</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="empty-state">لسه مفيش نتائج في أون لاين</div>
+        {% endif %}
+      </section>
+    </div>
+
+  </main>
+</body>
+</html>

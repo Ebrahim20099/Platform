@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}الباقات المتاحة{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+  <div id="filterBar" class="filter-bar">
+    <button class="filter-pill active" data-grade="all">الكل</button>
+    <button class="filter-pill" data-grade="first">الصف الأول الثانوي</button>
+    <button class="filter-pill" data-grade="second">الصف الثاني الثانوي</button>
+  </div>
+
+  <div id="cardsGrid" class="cards-grid"></div>
+</div>
+
+<!-- Popup إدخال كود الاشتراك -->
+<div id="codeModalOverlay" class="modal-overlay">
+  <div class="modal-box">
+    <button id="closeModal" class="modal-close">✕</button>
+    <h3>إشترك في الكورس</h3>
+    <p id="modalCourseTitle" class="modal-course-title"></p>
+    <input id="codeInput" type="text" placeholder="اكتب كود الاشتراك هنا" maxlength="20">
+    <div id="codeError" class="code-error"></div>
+    <button id="submitCodeBtn" class="subscribe-btn">تأكيد الكود</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const packages = {{ courses | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

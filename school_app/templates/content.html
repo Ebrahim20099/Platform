@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+  <a href="{{ url_for('index') }}" class="back-link">← رجوع للباقات</a>
+  <h2 class="content-page-title">{{ course.title }}</h2>
+  <p class="content-page-grade">{{ course.grade_label }}</p>
+
+  {% if course.contents %}
+    <div class="content-list">
+      {% for item in course.contents %}
+        <div class="content-item">
+          <div class="content-item-head">
+            <span class="content-type-badge content-type-{{ item.content_type }}">
+              {% if item.content_type == 'video' %}🎬 فيديو
+              {% elif item.content_type == 'pdf' %}📄 ملف
+              {% elif item.content_type == 'link' %}🔗 رابط
+              {% else %}📝 نص{% endif %}
+            </span>
+            <h3>{{ item.title }}</h3>
+          </div>
+
+          {% if item.content_type == 'video' %}
+            <div class="video-wrap">
+              <iframe src="{{ item.body }}" allowfullscreen></iframe>
+            </div>
+          {% elif item.content_type == 'pdf' or item.content_type == 'link' %}
+            <a href="{{ item.body }}" target="_blank" class="content-link-btn">فتح المحتوى</a>
+          {% else %}
+            <p class="content-text">{{ item.body }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="no-results">لسه مفيش محتوى مضاف للكورس ده، تابع قريبًا.</p>
+  {% endif %}
+</div>
+{% endblock %}

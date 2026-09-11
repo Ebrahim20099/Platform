@@ -1,0 +1,249 @@
+{% extends "admin_base.html" %}
+{% block title %}إدارة {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="admin-shell">
+  <div class="admin-topbar">
+    <h2 style="margin:0">إدارة: {{ course.title }}</h2>
+    <a href="{{ url_for('admin.dashboard') }}">← رجوع للوحة التحكم</a>
+  </div>
+
+  <!-- المحتوى التعليمي -->
+  <div class="admin-card">
+    <h3>المحتوى التعليمي</h3>
+
+    {% if course.contents %}
+      <table class="admin-table">
+        <thead><tr><th>العنوان</th><th>النوع</th><th>إجراءات</th></tr></thead>
+        <tbody>
+          {% for item in course.contents %}
+          <tr>
+            <td>{{ item.title }}</td>
+            <td>{{ item.content_type }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('admin.content_delete', item_id=item.id) }}" style="display:inline"
+                    onsubmit="return confirm('حذف العنصر ده؟')">
+                <button type="submit" class="btn btn-danger">حذف</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p style="color:#8a93a8">لسه مفيش محتوى.</p>
+    {% endif %}
+
+    <hr style="border-color:#232b3d; margin:16px 0">
+
+    <h4>إضافة محتوى جديد</h4>
+    <form method="POST" action="{{ url_for('admin.content_add', course_id=course.id) }}" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>عنوان الحصة / المحتوى</label>
+        <input type="text" name="title" required placeholder="مثال: الحصة الأولى - المقدمة">
+      </div>
+      <div class="form-group">
+        <label>نوع المحتوى</label>
+        <select name="content_type" required>
+          <option value="video">فيديو من الجهاز</option>
+          <option value="pdf">ملف PDF من الجهاز</option>
+          <option value="link">رابط خارجي</option>
+          <option value="text">نص مباشر</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>رفع الملف</label>
+        <input type="file" name="content_file" accept="video/mp4,video/webm,video/ogg,application/pdf">
+        <small>للفيديو وPDF. الحد الأقصى 500 ميجابايت.</small>
+      </div>
+      <div class="form-group">
+        <label>رابط أو نص (لنوع الرابط والنص فقط)</label>
+        <textarea name="body" rows="3" placeholder="اتركه فارغًا عند رفع فيديو أو PDF"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">إضافة المحتوى</button>
+    </form>
+  </div>
+
+  <div class="admin-card">
+    <h3>الامتحان الإلكتروني ({{ course.exam_questions|length }} سؤال)</h3>
+    {% if course.exam_questions %}
+      <table class="admin-table">
+        <thead><tr><th>السؤال</th><th>النوع</th><th>الدرجة</th><th>الإجابة الصحيحة</th><th>إجراء</th></tr></thead>
+        <tbody>
+          {% for question in course.exam_questions %}
+          <tr>
+            <td>{{ question.question }}</td>
+            <td>{{ {'mcq': 'اختيار من متعدد', 'true_false': 'صح أو غلط', 'essay': 'مقالي'}.get(question.question_type, 'اختيار من متعدد') }}</td>
+            <td>{{ question.marks }}</td>
+            <td>{{ question.correct_option|upper if question.correct_option else 'تصحيح يدوي' }}</td>
+            <td><form method="POST" action="{{ url_for('admin.exam_question_delete', question_id=question.id) }}"><button class="btn btn-danger" type="submit">حذف</button></form></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+    <form method="POST" action="{{ url_for('admin.exam_question_add', course_id=course.id) }}">
+      <div class="form-group"><label>نوع السؤال</label><select name="question_type" id="questionType" required><option value="mcq">اختيار من متعدد</option><option value="true_false">صح أو غلط</option><option value="essay">مقالي</option></select></div>
+      <div class="form-group"><label>السؤال</label><textarea name="question" rows="2" required></textarea></div>
+      <div class="form-group"><label>درجة السؤال</label><input type="number" name="marks" min="1" value="1" required></div>
+      <div id="mcqFields">
+        <div class="form-group"><label>اختيار A</label><input name="option_a"></div>
+        <div class="form-group"><label>اختيار B</label><input name="option_b"></div>
+        <div class="form-group"><label>اختيار C</label><input name="option_c"></div>
+        <div class="form-group"><label>اختيار D</label><input name="option_d"></div>
+      </div>
+      <div class="form-group" id="correctAnswerField"><label>الإجابة الصحيحة</label><select name="correct_option" id="correctOption"><option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select></div>
+      <button class="btn btn-primary" type="submit">إضافة السؤال</button>
+    </form>
+  </div>
+
+  <script>
+    const questionType = document.getElementById('questionType');
+    const mcqFields = document.getElementById('mcqFields');
+    const correctOption = document.getElementById('correctOption');
+    const correctAnswerField = document.getElementById('correctAnswerField');
+    function updateQuestionFields() {
+      const isMcq = questionType.value === 'mcq';
+      const isTrueFalse = questionType.value === 'true_false';
+      mcqFields.hidden = !isMcq;
+      mcqFields.querySelectorAll('input').forEach(input => { input.required = isMcq; });
+      correctAnswerField.hidden = questionType.value === 'essay';
+      correctOption.innerHTML = isTrueFalse
+        ? '<option value="true">صح</option><option value="false">غلط</option>'
+        : '<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>';
+    }
+    questionType.addEventListener('change', updateQuestionFields);
+    updateQuestionFields();
+  </script>
+
+  <div class="admin-card">
+    <h3>الأسئلة المقالية للمراجعة اليدوية</h3>
+    {% if essay_submissions %}
+      {% for submission in essay_submissions %}
+        <form method="POST" action="{{ url_for('admin.essay_grade_save', submission_id=submission.id) }}" style="border:1px solid #dfe5ee; border-radius:10px; padding:16px; margin-bottom:16px; background:#f9fafb;">
+          <div style="display:flex; justify-content:space-between; gap:16px; align-items:center; margin-bottom:8px; flex-wrap:wrap;">
+            <strong>{{ submission.user_id }}</strong>
+            <span>السؤال: {{ submission.question.question if submission.question else 'سؤال' }}</span>
+            <span style="color: {{ 'green' if submission.status == 'graded' else '#c084fc' }}; font-weight:700;">
+              {{ 'تم التصحيح' if submission.status == 'graded' else 'قيد التصحيح' }}
+            </span>
+          </div>
+          <p style="white-space:pre-wrap; margin-bottom:12px; color:#334155;">{{ submission.answer }}</p>
+          <div class="form-group">
+            <label>الدرجة</label>
+            <input type="number" name="score" value="{{ submission.score }}" min="0" max="{{ submission.question.marks if submission.question else 10 }}" required>
+          </div>
+          <div class="form-group">
+            <label>ملاحظات التصحيح</label>
+            <textarea name="feedback" rows="2" placeholder="اكتب ملاحظاتك...">{{ submission.feedback }}</textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">حفظ التصحيح</button>
+        </form>
+      {% endfor %}
+    {% else %}
+      <p style="color:#8a93a8">لا توجد إجابات مقالية تحتاج تصحيح.</p>
+    {% endif %}
+  </div>
+
+  <div class="admin-card">
+    <h3>الطلاب المشتركين ({{ students|length }})</h3>
+    {% if students %}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>الاسم</th>
+            <th>رقم الهاتف</th>
+            <th>رقم ولي الأمر</th>
+            <th>البريد الإلكتروني</th>
+            <th>الصف</th>
+            <th>نوع الدراسة</th>
+            <th>الدرجة</th>
+            <th>تاريخ الاشتراك</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in students %}
+          {% set report = student_report_map.get(student.user_id) if student_report_map is defined else none %}
+          <tr>
+            <td>{{ student.name }}</td>
+            <td>{{ student.phone }}</td>
+            <td>{{ student.guardian_phone or 'غير موجود' }}</td>
+            <td>{{ student.email }}</td>
+            <td>{{ student.grade }}</td>
+            <td>{{ student.study_type }}</td>
+            <td>
+              {% if report and report.result_status == 'ready' %}
+                {{ report.score }} / {{ report.total }}
+              {% elif report %}
+                قيد التصحيح
+              {% else %}
+                لا توجد
+              {% endif %}
+            </td>
+            <td>{{ student.created_at }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div style="margin-top:20px;">
+        <h4>تقرير الطالب بعد الامتحان</h4>
+        {% for student in students %}
+          {% set report = student_report_map.get(student.user_id) if student_report_map is defined else none %}
+          <form method="POST" action="{{ url_for('admin.student_report_save', course_id=course.id, user_id=student.user_id) }}" style="margin-bottom:16px; border:1px solid #dfe5ee; border-radius:10px; padding:14px; background:#f9fafb;">
+            <strong>{{ student.name }}</strong>
+            <div class="form-group">
+              <label>الإنجازات</label>
+              <textarea name="achievements" rows="2" placeholder="اكتب إنجازات الطالب...">{{ report.achievements if report else '' }}</textarea>
+            </div>
+            <div class="form-group">
+              <label>نقاط الضعف / المواضيع اللي يحتاج مراجعة</label>
+              <textarea name="weak_points" rows="2" placeholder="اكتب نقاط الضعف...">{{ report.weak_points if report else '' }}</textarea>
+            </div>
+            <div class="form-group">
+              <label>تحليل الأستاذ بعد الامتحان</label>
+              <textarea name="admin_analysis" rows="3" placeholder="اكتب تحليل الأستاذ...">{{ report.admin_analysis if report else '' }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">حفظ التقرير</button>
+          </form>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="color:#8a93a8">لسه مفيش طلاب مشتركين في الكورس ده.</p>
+    {% endif %}
+  </div>
+
+  <!-- أكواد الاشتراك -->
+  <div class="admin-card">
+    <h3>أكواد الاشتراك ({{ course.unused_codes_count() }} متاح من أصل {{ course.codes|length }})</h3>
+
+    <form method="POST" action="{{ url_for('admin.codes_generate', course_id=course.id) }}"
+          style="display:flex; gap:10px; align-items:end; margin-bottom:16px">
+      <div class="form-group" style="margin:0">
+        <label>عدد الأكواد المطلوب توليدها</label>
+        <input type="number" name="count" value="30" min="1" max="500" style="width:120px">
+      </div>
+      <button type="submit" class="btn btn-primary">توليد أكواد</button>
+      {% if course.codes %}
+        <a href="{{ url_for('admin.codes_export', course_id=course.id) }}" class="btn btn-secondary">تحميل كل الأكواد CSV</a>
+      {% endif %}
+    </form>
+
+    {% if course.codes %}
+      <div>
+        {% for code in course.codes %}
+          <span class="code-chip {{ 'badge-used' if code.is_used else 'badge-free' }}">
+            {{ code.code }} {{ '(مستخدم)' if code.is_used else '' }}
+            <form method="POST" action="{{ url_for('admin.code_delete', code_id=code.id) }}" style="display:inline"
+                  onsubmit="return confirm('حذف الكود ده؟')">
+              <button type="submit" style="background:none;border:none;color:#f87171;cursor:pointer;font-size:11px">✕</button>
+            </form>
+          </span>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="color:#8a93a8">لسه مفيش أكواد متولدة للكورس ده.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
