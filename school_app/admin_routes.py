@@ -171,6 +171,7 @@ def course_new():
 
         image_file = request.files.get("image")
         if image_file and image_file.filename and allowed_image(image_file.filename):
+            os.makedirs(current_app.config["UPLOAD_FOLDER"], exist_ok=True)
             filename = secure_filename(f"course_{datetime.utcnow().timestamp()}_{image_file.filename}")
             image_file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
             course.image = f"/static/images/{filename}"
@@ -201,6 +202,7 @@ def course_edit(course_id):
 
         image_file = request.files.get("image")
         if image_file and image_file.filename and allowed_image(image_file.filename):
+            os.makedirs(current_app.config["UPLOAD_FOLDER"], exist_ok=True)
             filename = secure_filename(f"course_{datetime.utcnow().timestamp()}_{image_file.filename}")
             image_file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
             course.image = f"/static/images/{filename}"
