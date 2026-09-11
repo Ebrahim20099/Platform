@@ -17,12 +17,12 @@
 
             <!-- Logo -->
             <a href="/" class="logo">
-                <img class="logo-img" src="../static/images/logo.png" alt="EM Logo">
+                <img class="logo-img" src="{{ url_for('static', filename='images/logo.png') }}" alt="EM Logo">
             </a>
 
             <!-- Mobile Menu Toggle -->
             <div class="nav-sign">
-                <img class="menu-icon" src="../static/icons/bars-solid-full.svg" alt="Menu Icon">
+                <img class="menu-icon" src="{{ url_for('static', filename='icons/bars-solid-full.svg') }}" alt="Menu Icon">
             </div>
 
             <!-- Navigation -->

@@ -24,12 +24,12 @@
 
             <!-- Logo -->
             <a href="/" class="logo">
-                <img class="logo-img" src="../static/images/logo.png" alt="EM Logo">
+                <img class="logo-img" src="{{ url_for('static', filename='images/logo.png') }}" alt="EM Logo">
             </a>
 
             <!-- Mobile Menu Toggle -->
             <div class="nav-sign">
-                <img class="menu-icon" src="../static/icons/bars-solid-full.svg" alt="Menu Icon">
+                <img class="menu-icon" src="{{ url_for('static', filename='icons/bars-solid-full.svg') }}" alt="Menu Icon">
             </div>
 
             <!-- Navigation -->
@@ -92,7 +92,7 @@
             <div class="hero-code">
 
                 <div class="profile-background">
-                    <img class="eng" src="../static/images/profile.png">
+                    <img class="eng" src="{{ url_for('static', filename='images/profile.png') }}">
                 </div>
 
                 <!-- Floating Code Cards -->
