@@ -199,7 +199,7 @@ def load_logged_in_user():
         g.user = db.session.execute(
             text("SELECT id, name, phone, email, grade, study_type, score FROM users WHERE id = :user_id"),
             {"user_id": user_id},
-        ).fetchone()
+        ).mappings().fetchone()
 
 
 def admin_required(view_func):
