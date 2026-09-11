@@ -429,7 +429,7 @@ def get_challenge_leaders():
         FROM users
         WHERE score > 0
         ORDER BY score DESC, id ASC
-    """)).fetchall()
+    """)).mappings().fetchall()
 
     leaders = {"center": [], "online": []}
     for row in results:
