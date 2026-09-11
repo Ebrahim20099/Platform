@@ -216,6 +216,17 @@ def inject_user():
     return {"user": g.user}
 
 
+@app.after_request
+def add_no_cache_headers(response):
+    # أي صفحة بتعتمد على تسجيل الدخول (اليوزر) متتخزنش (cache) خالص
+    # سواء في المتصفح أو في أي بروكسي على الشبكة (زي شبكات الموبايل)
+    if g.get("user") is not None:
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private"
+        response.headers["Pragma"] = "no-cache"
+    response.headers["Vary"] = "Cookie"
+    return response
+
+
 @app.route("/")
 def home():
     courses = Course.query.filter_by(is_active=True).order_by(Course.id.desc()).all()
