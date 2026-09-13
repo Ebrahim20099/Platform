@@ -68,6 +68,31 @@
 				{% if exam_report %}
 					{% if exam_report.result_status == 'ready' %}
 						<div class="exam-result">نتيجتك: {{ exam_report.score }} من {{ exam_report.total }}</div>
+
+						<div class="exam-review">
+							<h3>مراجعة الإجابات</h3>
+							{% for item in question_review %}
+								<fieldset class="exam-question review-question{% if item.type != 'essay' %}{{ ' is-correct' if item.is_correct else ' is-wrong' }}{% endif %}">
+									<legend>{{ loop.index }}. {{ item.question.question }}</legend>
+
+									{% if item.type == 'essay' %}
+										<p class="review-line"><strong>إجابتك:</strong> {{ item.student_answer or 'لم تتم الإجابة' }}</p>
+										<p class="review-line"><strong>الدرجة:</strong> {{ item.score }} من {{ item.question.marks }}</p>
+										{% if item.feedback %}
+											<p class="review-line review-feedback"><strong>ملاحظات المصحح:</strong> {{ item.feedback }}</p>
+										{% endif %}
+									{% else %}
+										<p class="review-line">
+											<strong>إجابتك:</strong> {{ item.student_answer or 'لم تتم الإجابة' }}
+											<span class="review-badge {{ 'badge-correct' if item.is_correct else 'badge-wrong' }}">{{ 'إجابة صحيحة' if item.is_correct else 'إجابة خاطئة' }}</span>
+										</p>
+										{% if not item.is_correct %}
+											<p class="review-line"><strong>الإجابة الصحيحة:</strong> {{ item.correct_answer }}</p>
+										{% endif %}
+									{% endif %}
+								</fieldset>
+							{% endfor %}
+						</div>
 					{% else %}
 						<div class="exam-result pending-result">نتيجتك قيد التصحيح، سيتم إرسال النتيجة فور الانتهاء من تصحيح الأسئلة المقالية.</div>
 					{% endif %}
