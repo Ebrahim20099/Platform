@@ -375,6 +375,47 @@ def course_content(course_id):
         return redirect(url_for("home"))
 
     exam_report = StudentExamReport.query.filter_by(user_id=g.user["id"], course_id=course_id).first()
+
+    question_review = []
+    if exam_report is not None and exam_report.result_status == "ready":
+        student_answers = {
+            a.question_id: a
+            for a in StudentAnswer.query.filter_by(user_id=g.user["id"], course_id=course_id).all()
+        }
+        essay_submissions = {
+            e.question_id: e
+            for e in EssaySubmission.query.filter_by(user_id=g.user["id"], course_id=course_id).all()
+        }
+        option_labels = {"a": "أ", "b": "ب", "c": "ج", "d": "د"}
+        for question in course.exam_questions:
+            if question.question_type == "essay":
+                submission = essay_submissions.get(question.id)
+                question_review.append({
+                    "question": question,
+                    "type": "essay",
+                    "student_answer": submission.answer if submission else "",
+                    "score": submission.score if submission else 0,
+                    "feedback": submission.feedback if submission else "",
+                })
+            else:
+                student_answer = student_answers.get(question.id)
+                given = student_answer.answer if student_answer else ""
+                is_correct = student_answer.is_correct if student_answer else False
+                if question.question_type == "true_false":
+                    given_label = {"true": "صح", "false": "غلط"}.get(given, given)
+                    correct_label = {"true": "صح", "false": "غلط"}.get(question.correct_option, question.correct_option)
+                else:
+                    given_label = f"{option_labels.get(given, '')}. {getattr(question, f'option_{given}', '') or ''}".strip(". ") if given else ""
+                    correct_key = question.correct_option
+                    correct_label = f"{option_labels.get(correct_key, '')}. {getattr(question, f'option_{correct_key}', '') or ''}".strip(". ") if correct_key else ""
+                question_review.append({
+                    "question": question,
+                    "type": question.question_type,
+                    "student_answer": given_label,
+                    "correct_answer": correct_label,
+                    "is_correct": is_correct,
+                })
+
     response = make_response(render_template(
         "course.html",
         course=course,
@@ -383,6 +424,7 @@ def course_content(course_id):
         exam_total=(exam_report.total if exam_report and exam_report.result_status == "ready" else 0),
         essay_total=sum(1 for question in course.exam_questions if question.question_type == "essay"),
         result_ready=(exam_report is not None and exam_report.result_status == "ready"),
+        question_review=question_review,
     ))
     response.headers["Cache-Control"] = "no-store, max-age=0"
     return response
