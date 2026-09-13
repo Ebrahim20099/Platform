@@ -151,6 +151,22 @@ class EssaySubmission(db.Model):
     question = db.relationship("ExamQuestion", backref=db.backref("essay_submissions", cascade="all, delete-orphan"))
 
 
+class StudentAnswer(db.Model):
+    """إجابة الطالب على سؤال موضوعي (اختياري / صح وغلط) في الامتحان"""
+    __tablename__ = "student_answers"
+    __table_args__ = (db.UniqueConstraint("user_id", "course_id", "question_id", name="uq_student_answer"),)
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False, index=True)
+    course_id = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False, index=True)
+    question_id = db.Column(db.Integer, db.ForeignKey("exam_questions.id"), nullable=False, index=True)
+    answer = db.Column(db.String(255), nullable=True, default="")
+    is_correct = db.Column(db.Boolean, nullable=False, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    question = db.relationship("ExamQuestion")
+
+
 class StudentExamReport(db.Model):
     __tablename__ = "student_exam_reports"
 
