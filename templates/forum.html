@@ -77,7 +77,7 @@
                             <div class="forum-meta">
                                 <span>{{ item.student_name }}</span>
                                 <span>{{ item.student_grade }}</span>
-                                <span>{{ item.created_at[:10] if item.created_at else '' }}</span>
+                                <span>{{ item.created_at.strftime('%Y-%m-%d') if item.created_at else '' }}</span>
                             </div>
                             <h3>السؤال</h3>
                             <p>{{ item.question }}</p>
