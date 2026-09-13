@@ -549,9 +549,18 @@ def submit_exam(course_id):
             db.session.commit()
         else:
             objective_total += question.marks
-            if answer == question.correct_option:
+            is_correct = answer == question.correct_option
+            if is_correct:
                 score += question.marks
 
+            existing_answer = StudentAnswer.query.filter_by(
+                user_id=g.user["id"], course_id=course_id, question_id=question.id
+            ).first()
+            if existing_answer is None:
+                existing_answer = StudentAnswer(user_id=g.user["id"], course_id=course_id, question_id=question.id)
+                db.session.add(existing_answer)
+            existing_answer.answer = answer
+            existing_answer.is_correct = is_correct
     report = StudentExamReport.query.filter_by(user_id=g.user["id"], course_id=course_id).first()
     if report is None:
         report = StudentExamReport(user_id=g.user["id"], course_id=course_id)
