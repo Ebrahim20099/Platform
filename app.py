@@ -35,7 +35,7 @@ app.config["CONTENT_UPLOAD_FOLDER"] = os.path.join(app.root_path, "static", "upl
 app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024
 
 from school_app.extensions import db, login_manager
-from school_app.models import Admin, ContentItem, Course, CourseEnrollment, EssaySubmission, ExamQuestion, StudentExamReport, StudentForumQuestion
+from school_app.models import Admin, ContentItem, Course, CourseEnrollment, EssaySubmission, ExamQuestion, StudentAnswer, StudentExamReport, StudentForumQuestion
 from school_app.admin_routes import admin_bp
 
 db.init_app(app)
