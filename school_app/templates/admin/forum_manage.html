@@ -27,7 +27,7 @@
                 <div class="forum-admin-card">
                     <div class="forum-meta">
                         <span class="meta-pill">الطالب: {{ item.user_id }}</span>
-                        <span class="meta-pill">{{ item.created_at[:16] if item.created_at else '' }}</span>
+                        <span class="meta-pill">{{ item.created_at.strftime('%Y-%m-%d %H:%M') if item.created_at else '' }}</span>
                         <span class="status-badge {% if item.answer %}answered{% else %}open{% endif %}">
                             {{ 'تم الرد' if item.answer else 'مفتوح' }}
                         </span>
