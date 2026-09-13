@@ -28,6 +28,7 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 body {
@@ -994,6 +995,8 @@ button {
 
 .eng{
     width: 600px;
+    max-width: 100%;
+    height: auto;
 }
 
 
