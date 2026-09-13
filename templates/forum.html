@@ -92,7 +92,7 @@
                                     <h4>إجابة الإدارة</h4>
                                     <p>{{ item.answer }}</p>
                                     {% if item.answered_at %}
-                                        <small>تمت الإجابة في {{ item.answered_at[:10] if item.answered_at else '' }}</small>
+                                        <small>تمت الإجابة في {{ item.answered_at.strftime('%Y-%m-%d') if item.answered_at else '' }}</small>
                                     {% endif %}
                                 </div>
                             {% else %}
